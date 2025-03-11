@@ -12,7 +12,6 @@ app.use(cors())
 app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use('/login', express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
 
@@ -32,9 +31,7 @@ app.use(cookieParser())
 
 app.get('/', async (req, res) => {
     const myUsers = await collection.find({}).toArray();
-    console.log(myUsers);
     res.send(myUsers);
-
 })
 app.post('/', async (req, res) => {
     res.send(req.body);
@@ -46,13 +43,8 @@ app.post('/', async (req, res) => {
 app.post('/login', async (req, res) => {
     let { email, password } = req.body;
     const myUsers = await collection.find({}).toArray();
-    console.log(req.body);
-    console.log(email);
-
     myUsers.forEach(myUser => {
         if (myUser.email == email) {
-            console.log(password);
-            console.log(myUser.password);
             bcrypt.compare(password, myUser.password, function (err, result) {
                 if (result == true) {
                     let token = jwt.sign({ email: myUser.email }, 'neerajsign');
@@ -66,7 +58,10 @@ app.post('/login', async (req, res) => {
 
         }
     });
-
+})
+app.get('/login', async (req, res) => {
+    const staticFile =path.join(__dirname, 'public', 'index.html');
+    res.sendFile(staticFile);
 })
 app.get('/check', async (req, res) => {
     if (req.cookies.token) {
