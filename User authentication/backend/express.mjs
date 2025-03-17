@@ -33,25 +33,25 @@ app.set('view engine', 'ejs');
 app.get('/', async (req, res) => {
     res.render('signup');
 })
-app.post('/', async (req, res) => {
+app.post('/', isLoggedOut, async (req, res) => {
+    console.log(req.body);
+
     let userExist = false;
     const myUsers = await collection.find({}).toArray();
     myUsers.forEach(user => {
-        console.log("in foreach");
-        if (user.email === req.email) {
+        if (user.email === req.body.email) {
             userExist = true;
-            console.log("in foreach if");
         }
     });
-    if (userExist === true) {
+    if (userExist === false) {
+        console.log(`inserting one based on ${userExist}`);
         bcrypt.hash(req.body.password, 10, async function (err, hash) {
             req.body.password = hash;
             await collection.insertOne(req.body);
         });
-        res.send(req.body);
-    } else if (userExist === false) {
+        res.redirect('/login');
+    } else if (userExist === true) {
         res.send("User with this Email already exist.")
-
     }
 
 })
@@ -78,7 +78,7 @@ app.post('/login', async (req, res) => {
     }
 })
 app.get('/login', async (req, res) => {
-    if (req.cookies.token !== "") {
+    if (req.cookies.token && req.cookies.token !== "") {
         res.redirect('/profile')
     } else {
         const staticFile = path.join(__dirname, 'public', 'index.html');
@@ -95,6 +95,7 @@ app.get('/profile', isLoggedIn, async (req, res) => {
 
 // middleware 
 
+
 function isLoggedIn(req, res, next) {
     if (req.cookies.token) {
         jwt.verify(req.cookies.token, 'neerajsign', function (err, decoded) {
@@ -103,6 +104,14 @@ function isLoggedIn(req, res, next) {
         next();
     } else {
         res.redirect('/login');
+    }
+}
+
+function isLoggedOut(req, res, next) {
+    if (!res.cookies.token || res.cookies.token == "") {
+        res.redirect('/login')
+    } else {
+        next();
     }
 }
 
