@@ -26,7 +26,6 @@ function App() {
   return (
     <>
       <SignupForm saveUser={saveUser} />
-      {/* <SignIn saveUser={saveUser} /> */}
       {fetched && <p>You have been successfully registered</p>}
     </>
   );

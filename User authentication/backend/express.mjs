@@ -27,51 +27,84 @@ const collection = db.collection('users');
 
 const port = 3000
 app.use(cookieParser())
+app.set('view engine', 'ejs');
 
 
 app.get('/', async (req, res) => {
-    const myUsers = await collection.find({}).toArray();
-    res.send(myUsers);
+    res.render('signup');
 })
 app.post('/', async (req, res) => {
-    res.send(req.body);
-    bcrypt.hash(req.body.password, 10, async function (err, hash) {
-        req.body.password = hash;
-        await collection.insertOne(req.body);
+    let userExist = false;
+    const myUsers = await collection.find({}).toArray();
+    myUsers.forEach(user => {
+        console.log("in foreach");
+        if (user.email === req.email) {
+            userExist = true;
+            console.log("in foreach if");
+        }
     });
+    if (userExist === true) {
+        bcrypt.hash(req.body.password, 10, async function (err, hash) {
+            req.body.password = hash;
+            await collection.insertOne(req.body);
+        });
+        res.send(req.body);
+    } else if (userExist === false) {
+        res.send("User with this Email already exist.")
+
+    }
+
 })
 app.post('/login', async (req, res) => {
     let { email, password } = req.body;
     const myUsers = await collection.find({}).toArray();
+    let userFound = false;
     myUsers.forEach(myUser => {
-        if (myUser.email == email) {
+        if (myUser.email === email) {
+            userFound = true;
             bcrypt.compare(password, myUser.password, function (err, result) {
-                if (result == true) {
-                    let token = jwt.sign({ email: myUser.email }, 'neerajsign');
-                    res.cookie("token", token);
-                    res.send("you are logged-in");
+                if (result) {
+                    let token = jwt.sign({ email: myUser.email, name: myUser.name }, 'neerajsign');
+                    res.cookie('token', token);
+                    return res.redirect('/profile');
                 } else {
-                    res.send("Try another credentials");
+                    return res.send("Try another password");
                 }
             });
-
-
         }
     });
+    if (!userFound) {
+        return res.send("Try another mail");
+    }
 })
 app.get('/login', async (req, res) => {
-    const staticFile =path.join(__dirname, 'public', 'index.html');
-    res.sendFile(staticFile);
-})
-app.get('/check', async (req, res) => {
-    if (req.cookies.token) {
-        var decoded = jwt.verify(req.cookies.token, 'secret');
-        res.send(decoded)
+    if (req.cookies.token !== "") {
+        res.redirect('/profile')
     } else {
-        res.send("not logged in");
+        const staticFile = path.join(__dirname, 'public', 'index.html');
+        res.sendFile(staticFile);
     }
-
 })
+app.get('/logout', async (req, res) => {
+    res.cookie("token", "");
+    res.redirect('/login')
+})
+app.get('/profile', isLoggedIn, async (req, res) => {
+    res.send(`Welcome ${req.name}`)
+})
+
+// middleware 
+
+function isLoggedIn(req, res, next) {
+    if (req.cookies.token) {
+        jwt.verify(req.cookies.token, 'neerajsign', function (err, decoded) {
+            req.name = decoded.name;
+        });
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
 
 
 app.listen(port, () => {

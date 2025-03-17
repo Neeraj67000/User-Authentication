@@ -15,6 +15,7 @@ export default function SignupForm(props) {
     props.saveUser(data);
     setValue("email", "");
     setValue("password", "");
+    setValue("name", "");
   };
 
   return (
@@ -38,6 +39,35 @@ export default function SignupForm(props) {
             padding: "10px",
           })}
         >
+          <TextField
+            {...register("name", {
+              required: true,
+              minLength: 6,
+            })}
+            placeholder="You Name"
+            id="outlined-size-small-name"
+            defaultValue=""
+            size="small"
+          />
+          {/* errors will return when field validation fails  */}
+          {errors.name && errors.name.type === "required" && (
+            <Box
+              sx={() => ({
+                color: "red",
+              })}
+            >
+              Please add your name.
+            </Box>
+          )}
+          {errors.name && errors.name.type === "minLength" && (
+            <Box
+              sx={() => ({
+                color: "red",
+              })}
+            >
+              Name should be atleast 4 characters
+            </Box>
+          )}
           <TextField
             defaultValue=""
             {...register("email", {
