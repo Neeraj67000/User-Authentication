@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { name } from 'ejs';
 
 const app = express()
 app.use(cors())
@@ -30,10 +31,10 @@ app.use(cookieParser())
 app.set('view engine', 'ejs');
 
 
-app.get('/', async (req, res) => {
+app.get('/', isLoggedOut, async (req, res) => {
     res.render('signup');
 })
-app.post('/', isLoggedOut, async (req, res) => {
+app.post('/', async (req, res) => {
     console.log(req.body);
 
     let userExist = false;
@@ -66,7 +67,7 @@ app.post('/login', async (req, res) => {
                 if (result) {
                     let token = jwt.sign({ email: myUser.email, name: myUser.name }, 'neerajsign');
                     res.cookie('token', token);
-                    return res.redirect('/profile');
+                    return res.redirect('/dashboard');
                 } else {
                     return res.send("Try another password");
                 }
@@ -79,7 +80,7 @@ app.post('/login', async (req, res) => {
 })
 app.get('/login', async (req, res) => {
     if (req.cookies.token && req.cookies.token !== "") {
-        res.redirect('/profile')
+        res.redirect('/dashboard')
     } else {
         const staticFile = path.join(__dirname, 'public', 'index.html');
         res.sendFile(staticFile);
@@ -89,8 +90,13 @@ app.get('/logout', async (req, res) => {
     res.cookie("token", "");
     res.redirect('/login')
 })
-app.get('/profile', isLoggedIn, async (req, res) => {
-    res.send(`Welcome ${req.name}`)
+app.get('/dashboard', isLoggedIn, async (req, res) => {
+    let letter = req.name.toUpperCase();
+    let firstLetter = letter.indexOf(" ");
+    res.render('dashboard', {
+        avatarName: letter.charAt(0) + "" + letter.charAt(firstLetter + 1),
+        useName: req.name
+    });
 })
 
 // middleware 
@@ -108,8 +114,8 @@ function isLoggedIn(req, res, next) {
 }
 
 function isLoggedOut(req, res, next) {
-    if (!res.cookies.token || res.cookies.token == "") {
-        res.redirect('/login')
+    if (req.cookies.token || req.cookies.token !== "") {
+        res.redirect('/dashboard')
     } else {
         next();
     }
