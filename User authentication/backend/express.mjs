@@ -23,7 +23,8 @@ const dbName = 'myUsers';
 await client.connect();
 console.log('Connected successfully to server');
 const db = client.db(dbName);
-const collection = db.collection('users');
+const Users = db.collection('users');
+const posts = db.collection('posts');
 
 
 const port = 3000
@@ -38,7 +39,7 @@ app.post('/', async (req, res) => {
     console.log(req.body);
 
     let userExist = false;
-    const myUsers = await collection.find({}).toArray();
+    const myUsers = await Users.find({}).toArray();
     myUsers.forEach(user => {
         if (user.email === req.body.email) {
             userExist = true;
@@ -48,7 +49,7 @@ app.post('/', async (req, res) => {
         console.log(`inserting one based on ${userExist}`);
         bcrypt.hash(req.body.password, 10, async function (err, hash) {
             req.body.password = hash;
-            await collection.insertOne(req.body);
+            await Users.insertOne(req.body);
         });
         res.redirect('/login');
     } else if (userExist === true) {
@@ -58,7 +59,7 @@ app.post('/', async (req, res) => {
 })
 app.post('/login', async (req, res) => {
     let { email, password } = req.body;
-    const myUsers = await collection.find({}).toArray();
+    const myUsers = await Users.find({}).toArray();
     let userFound = false;
     myUsers.forEach(myUser => {
         if (myUser.email === email) {
@@ -97,6 +98,11 @@ app.get('/dashboard', isLoggedIn, async (req, res) => {
         avatarName: letter.charAt(0) + "" + letter.charAt(firstLetter + 1),
         useName: req.name
     });
+})
+
+app.post('/post', async (req, res) => {
+    posts.insertOne(req.body);
+    res.send(`post created with title ${req.body.post}` )
 })
 
 // middleware 

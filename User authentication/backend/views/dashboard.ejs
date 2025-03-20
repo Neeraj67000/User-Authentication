@@ -9,10 +9,10 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/js/coreui.bundle.min.js"></script>
 </head>
 
-<body class="bg-secondary">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+<body class="bg-black">
+    <nav class="navbar navbar-expand-lg bg-secondary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand text-light" href="#">
                 <%= useName %>
             </a>
             <button class="navbar-toggler" type="button" data-coreui-toggle="collapse"
@@ -23,16 +23,16 @@
             <div class="collapse navbar-collapse" id="navbarScroll">
                 <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active text-light" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-coreui-toggle="dropdown"
-                            aria-expanded="false">
+                        <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                            data-coreui-toggle="dropdown" aria-expanded="false">
                             Action
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/">Signup</a></li>
-                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                            <li><a class="dropdown-item " href="/">Signup</a></li>
+                            <li><a class="dropdown-item " href="/logout">Logout</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -49,9 +49,16 @@
             </div>
         </div>
     </nav>
-    <div class="pt-5 container-fluid">
-        <h1 class="fs-3 text-light">Welcome, <%= useName %>
+    <div class="pt-3 container-fluid">
+        <h1 class="fs-3 text-light text-center">Welcome, <%= useName %>
         </h1>
+    </div>
+    <div class="pt-3 container-fluid">
+        <h1 class="fs-4 text-light">Create Post</h1>
+        <form class="w-25 mt-4" action="/post" method="post">
+            <textarea class="form-control bg-black text-light" id="exampleFormControlTextarea1" rows="4" name="post"></textarea>
+            <button type="submit" class="btn btn-light mt-2">Submit</button>
+        </form>
     </div>
 </body>
 
