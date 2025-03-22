@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/css/coreui.min.css" rel="stylesheet">
+    <title>Dashboard page</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.3.1/dist/js/coreui.bundle.min.js"></script>
+</head>
+
+<body class="bg-black">
+    <div class="pt-5 container-fluid">
+        <h1 class="fs-6 m-0 text-light font-weight-light">Edit the post</h1>
+        <form class="w-25 mt-4" action="/post-edit/<%= editPost._id %>" method="post">
+            <textarea class="form-control bg-transparent text-light resize-none" id="exampleFormControlTextarea1"
+                rows="3" name="post" placeholder="What's on your mind"><%= editPost.postData %></textarea>
+            <button type="submit" class="btn btn-warning mt-2">Update Post</button>
+        </form>
+    </div>
+
+
+</body>
+
+</html>

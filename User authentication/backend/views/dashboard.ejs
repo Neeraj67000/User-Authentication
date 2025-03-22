@@ -49,17 +49,44 @@
             </div>
         </div>
     </nav>
-    <div class="pt-3 container-fluid">
-        <h1 class="fs-3 text-light text-center">Welcome, <%= useName %>
+    <div class="pt-5 container-fluid">
+        <h1 class="fs-3 text-light m-0">Welcome, <%= useName %>
         </h1>
     </div>
-    <div class="pt-3 container-fluid">
-        <h1 class="fs-4 text-light">Create Post</h1>
+    <div class="pt-0 container-fluid">
+        <h1 class="fs-6 m-0 text-light font-weight-light">You can Create a Post.</h1>
         <form class="w-25 mt-4" action="/post" method="post">
-            <textarea class="form-control bg-black text-light" id="exampleFormControlTextarea1" rows="4" name="post"></textarea>
-            <button type="submit" class="btn btn-light mt-2">Submit</button>
+            <textarea class="form-control bg-transparent text-light resize-none" id="exampleFormControlTextarea1"
+                rows="3" name="post" placeholder="What's on your mind"></textarea>
+            <button type="submit" class="btn btn-light mt-2">Create New Post</button>
         </form>
     </div>
+    <div class="pt-5 container-fluid d-flex flex-column gap-3 ">
+        <% if (ejsPostData) { ejsPostData.forEach(myPost=> { %>
+            <div class="card w-50 border-0">
+                <div class="border border-light card-body rounded" style="background-color: rgb(39 39 42);">
+                    <h5 class="card-title text-info">
+                        @<%= useName %>
+                    </h5>
+                    <p class="card-text text-light">
+                        <%= myPost.postData %>
+                    </p>
+                    <% if (myPost && myPost.isLiked) { %>
+                        <a href="/post-like/<%= myPost._id %>"
+                            class="text-decoration-none card-link text-danger">UnLike</a>
+                        <% } else { %>
+                            <a href="/post-like/<%= myPost._id %>" class="text-decoration-none card-link text-info">
+                                Like</a>
+                            <% } %>
+                                <a href="/post-edit/<%= myPost._id %>"
+                                    class="text-decoration-none card-link text-light">Edit</a>
+                                <a href="/post-delete/<%= myPost._id %>"
+                                    class="text-decoration-none card-link text-danger">Delete</a>
+                </div>
+            </div>
+            <% })} %>
+    </div>
+
 </body>
 
 </html>
